@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Trocchi&display=swap');
+
+:root {
+  --landing-purple-brown: #231f20;
+  --landing-egg-shell: #e8e4d2;
+  --landing-dark-peach: #a32c23;
+  --landing-border-width: 0.75rem;
+}
+
+.landing-scene,
+.landing-scene * ,
+.landing-scene *::before,
+.landing-scene *::after {
+  box-sizing: border-box;
+}
+
+.landing-scene {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: 'Trocchi', Georgia, serif;
+  background: #000;
+  position: relative;
+}
+
+/* Three.js canvas sits behind everything */
+.landing-canvas-host {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+.landing-canvas-host canvas {
+  position: fixed !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0;
+}
+
+/* UI layer on top */
+#landing-ui {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none;
+}
+
+/* h1 clipped floral texture */
+#landing-ui h1 {
+  font-family: 'Anton', sans-serif;
+  text-align: center;
+  margin: 0;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+  -webkit-mask-image: -webkit-gradient(linear, left top, left bottom,
+    color-stop(0, #000), color-stop(0.6, #000), color-stop(1, transparent));
+  font-size: clamp(4rem, 22vw, 20rem);
+  font-weight: 400;
+  line-height: 0.95;
+  background-color: var(--landing-dark-peach);
+  background-image:
+    url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/74321/tw-o.png'),
+    url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/74321/tw6-o.png'),
+    url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/74321/tw5-o.png');
+  background-size: 45vw auto, 45vw auto, 30vw auto;
+  background-repeat: repeat-x;
+  background-position: -120px 15%, 230px 20%, -100px 3vw;
+  padding: 0 var(--landing-border-width);
+  filter: drop-shadow(0 2px 24px rgba(0, 0, 0, 0.55));
+  pointer-events: auto;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+}
+
+/* tagline */
+#landing-tagline {
+  margin-top: 1.5rem;
+  height: 2.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  pointer-events: none;
+  position: relative;
+  width: min(90vw, 52rem);
+}
+
+#landing-tagline span {
+  font-family: 'Trocchi', Georgia, serif;
+  font-size: clamp(0.9rem, 2vw, 1.4rem);
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--landing-egg-shell);
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.8);
+  position: absolute;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+  text-align: center;
+}
+
+#landing-tagline span.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#landing-tagline span.exit {
+  opacity: 0;
+  transform: translateY(-12px);
+}

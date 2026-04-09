@@ -36,7 +36,7 @@ const Home = () => {
           <div className="flex gap-4 justify-center mt-8">
             <button
               onClick={() => navigate('/quiz')}
-              className="px-6 py-3 bg-primary text-black font-semibold rounded-lg hover:bg-primary/80 transition-colors"
+              className="btn-primary h-12 px-8"
             >
               Retake Quiz
             </button>

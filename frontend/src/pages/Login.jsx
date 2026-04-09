@@ -15,6 +15,12 @@ const Login = () => {
     password: '',
     rememberMe: false
   });
+  const [panelFx, setPanelFx] = useState({
+    rotateX: 0,
+    rotateY: 0,
+    glowX: 50,
+    glowY: 50
+  });
 
   const handleChange = (e) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
@@ -80,42 +86,73 @@ const Login = () => {
     }
   };
 
-  const eyeVariants = {
-    closed: { scaleY: 0.1, opacity: 0.5 },
-    open: { scaleY: 1, opacity: 1 }
+  const handlePanelMouseMove = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+    const y = ((e.clientY - rect.top) / rect.height) * 2 - 1;
+
+    setPanelFx({
+      rotateX: -y * 6,
+      rotateY: x * 6,
+      glowX: ((e.clientX - rect.left) / rect.width) * 100,
+      glowY: ((e.clientY - rect.top) / rect.height) * 100
+    });
+  };
+
+  const handlePanelMouseLeave = () => {
+    setPanelFx({ rotateX: 0, rotateY: 0, glowX: 50, glowY: 50 });
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 relative">
+    <div className="min-h-screen flex items-center justify-center p-4 md:p-6 relative">
       <FluidBackground />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-full max-w-[440px]"
+        className="w-full max-w-[880px]"
       >
-        <div className="glass-card p-10 relative overflow-hidden">
+        <div className="glass-card login-card glass-landscape relative overflow-hidden">
           {/* Top Decorative bar */}
           <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-primary to-secondary"></div>
 
-          <div className="text-center mb-10">
-            <motion.div
-              initial={{ y: -20 }}
-              animate={{ y: 0 }}
-              className="inline-block p-4 rounded-3xl bg-white/5 mb-6 border border-white/10"
-            >
-              <Lock className="w-8 h-8 text-primary" />
-            </motion.div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-white mb-3">
-              Welcome Back
-            </h1>
-            <p className="text-white/40 text-sm font-medium">Please enter your credentials to continue</p>
-          </div>
+          <motion.div
+            className="hidden md:flex panel-left px-6"
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0, rotateX: panelFx.rotateX, rotateY: panelFx.rotateY }}
+            transition={{ duration: 0.6, ease: 'easeOut', type: 'spring', stiffness: 110, damping: 16 }}
+            whileHover={{ scale: 1.015 }}
+            onMouseMove={handlePanelMouseMove}
+            onMouseLeave={handlePanelMouseLeave}
+            style={{
+              transformStyle: 'preserve-3d',
+              '--glow-x': `${panelFx.glowX}%`,
+              '--glow-y': `${panelFx.glowY}%`
+            }}
+          >
+            <div className="panel-left-grid" />
+            <span className="panel-left-pulse panel-left-pulse-1" />
+            <span className="panel-left-pulse panel-left-pulse-2" />
+            <div className="panel-left-content">
+              <motion.div
+                initial={{ y: -20 }}
+                animate={{ y: 0 }}
+                className="inline-block p-4 rounded-3xl icon-circle mb-6"
+              >
+                <Lock className="w-8 h-8 text-primary" />
+              </motion.div>
+              <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-white mb-2 text-center">
+                Welcome Back
+              </h1>
+              <p className="text-white/85 text-sm font-medium text-center">Please enter your credentials to continue</p>
+            </div>
+          </motion.div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="panel-right px-1 md:px-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <label className="text-xs font-bold text-white/50 uppercase tracking-widest ml-1">Identifier</label>
+              <label className="text-xs uppercase tracking-widest ml-1 label-strong">Identifier</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-primary transition-colors">
                   <Mail className="h-5 w-5" />
@@ -127,13 +164,13 @@ const Login = () => {
                   placeholder="Username or email"
                   value={formData.identifier}
                   onChange={handleChange}
-                  className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 text-white placeholder:text-white/20 input-glow font-medium"
+                  className="w-full h-14 rounded-2xl pl-12 pr-4 input-glow font-medium text-slate-900"
                 />
               </div>
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs font-bold text-white/50 uppercase tracking-widest ml-1">Password</label>
+              <label className="text-xs uppercase tracking-widest ml-1 label-strong">Password</label>
               <div className="relative group">
                 <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-white/20 group-focus-within:text-primary transition-colors">
                   <Lock className="h-5 w-5" />
@@ -145,7 +182,7 @@ const Login = () => {
                   placeholder="••••••••"
                   value={formData.password}
                   onChange={handleChange}
-                  className="w-full h-14 bg-white/5 border border-white/10 rounded-2xl pl-12 pr-14 text-white placeholder:text-white/20 input-glow font-medium"
+                  className="w-full h-14 rounded-2xl pl-12 pr-14 input-glow font-medium text-slate-900"
                 />
                 <button
                   type="button"
@@ -176,14 +213,14 @@ const Login = () => {
                   onChange={handleChange}
                   className="hidden"
                 />
-                <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${formData.rememberMe ? 'bg-primary border-primary' : 'border-white/10 bg-white/5'}`}>
+                <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all duration-300 ${formData.rememberMe ? 'bg-primary border-primary' : 'border-slate-300 bg-white'}`}>
                   {formData.rememberMe && (
                     <motion.svg initial={{ scale: 0 }} animate={{ scale: 1 }} className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                       <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                     </motion.svg>
                   )}
                 </div>
-                <span className="text-sm font-semibold text-white/40 group-hover:text-white/70 transition-colors">Stay active</span>
+                <span className="text-sm font-semibold text-slate-600 transition-colors">Stay active</span>
               </label>
               <Link to="/forgot-password" title="Recover Access" className="text-sm font-bold text-primary hover:text-primary-dark transition-colors">Recovery?</Link>
             </div>
@@ -204,18 +241,18 @@ const Login = () => {
                 </>
               )}
             </motion.button>
-          </form>
+            </form>
 
-          <div className="relative my-10">
+            <div className="relative my-6 md:my-7">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
+              <div className="w-full border-t border-white/15"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase tracking-tighter">
-              <span className="bg-[#0f172a] px-4 text-white/20 font-bold">Or connect with</span>
+              <span className="divider-label">Or connect with</span>
             </div>
-          </div>
+            </div>
 
-          <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
             <motion.button 
               whileHover={{ scale: 1.05, translateY: -2 }}
               whileTap={{ scale: 0.95 }}
@@ -232,14 +269,15 @@ const Login = () => {
               <svg className="w-5 h-5 fill-white" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.841 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
               <span>GitHub</span>
             </motion.button>
-          </div>
+            </div>
 
-          <p className="mt-10 text-center text-white/30 font-medium">
-            New here?{' '}
-            <Link to="/register" className="text-white hover:text-primary transition-colors font-bold underline decoration-primary/30 underline-offset-4">
-              Create Account
-            </Link>
-          </p>
+            <p className="mt-5 text-center md:text-left text-white/50 font-medium">
+              New here?{' '}
+              <Link to="/register" className="text-white hover:text-primary transition-colors font-bold underline decoration-primary/30 underline-offset-4">
+                Create Account
+              </Link>
+            </p>
+          </div>
         </div>
       </motion.div>
     </div>
